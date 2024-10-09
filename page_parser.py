@@ -17,7 +17,7 @@ class PageParser:
                 for entry in paper_entries:
                     meta_div = entry.find_next('dd').find('div', class_='meta')
                     title_element = meta_div.find('div', class_='list-title')
-                    title = title_element.text.replace('Title: ', '').strip()
+                    title = title_element.text.replace('Title:', '').strip()  # 移除 "Title:" 并去除首尾空白
                     authors_element = meta_div.find('div', class_='list-authors')
                     authors = ', '.join(author.text for author in authors_element.find_all('a'))
                     abstract_element = meta_div.find('p', class_='mathjax')
