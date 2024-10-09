@@ -101,3 +101,6 @@ class RepoManager:
 
         except subprocess.CalledProcessError as e:
             print(f"Git operation failed for {repo_name}: {e}")
+
+    def get_prompt(self, repo_name):
+        return self.prompts.get(repo_name, self.prompts.get('default'))

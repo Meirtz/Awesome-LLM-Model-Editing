@@ -59,6 +59,9 @@ def main(repos_to_update):
         print(f"Total papers in {repo_name}: {num_of_papers}")
 
         prompt_template = repo_manager.prompts.get(repo_name)
+        if prompt_template is None:
+            print(f"Error: No prompt template found for {repo_name}. Skipping this repository.")
+            continue
         print(f"Using prompt template for {repo_name}: {prompt_template}")
 
         relevant_papers = []
@@ -82,7 +85,8 @@ def main(repos_to_update):
                         print(f"Paper already exists and skipped: {papers[futures.index(future)]['title']}")
                 except Exception as exc:
                     print(f"Paper processing generated an exception: {papers[futures.index(future)]['title']}")
-                    print(f"{exc}")
+                    print(f"Exception details: {exc}")
+                    print(f"Prompt template: {prompt_template}")
 
         # 使用当前处理的论文更新README
         repo_manager.update_readme(repo_name, relevant_papers)
