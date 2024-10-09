@@ -1,19 +1,19 @@
 {
     "LLM-Paper-Daily": {
         "url": "https://arxiv.org/list/cs.CL/new",
-        "path": "./LLM-Paper-Daily",
+        "path": "./repositories/LLM-Paper-Daily",
         "topic": "LLM Research",
         "enabled": true
     },
     "Awesome-LLM-Jailbreak": {
         "url": "https://arxiv.org/list/cs.CL/new",
-        "path": "./Awesome-LLM-Jailbreak",
+        "path": "./repositories/Awesome-LLM-Jailbreak",
         "topic": "LLM Jailbreak",
         "enabled": true
     },
     "Awesome-LLM-Model-Editing": {
         "url": "https://arxiv.org/list/cs.CL/new",
-        "path": "./Awesome-LLM-Model-Editing",
+        "path": "./repositories/Awesome-LLM-Model-Editing",
         "topic": "LLM Model Editing",
         "enabled": true
     }
