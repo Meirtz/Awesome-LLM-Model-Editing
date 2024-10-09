@@ -15,7 +15,7 @@ class LLMClassifier:
     
     def configure(self, model, max_tokens, temperature):
         self.model = model
-        self.max_tokens = max_tokens
+        self.max_tokens = max_tokens  # 修复这里
         self.temperature = temperature
     
     def classify(self, title, abstract, prompt_template, max_retries=10, retry_delay=5):
@@ -76,7 +76,7 @@ class LLMClassifier:
                 {"role": "system", "content": "You are a helpful assistant that summarizes academic papers."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=100,
+            max_tokens=512,
             temperature=0.3
         )
         return response.choices[0].message.content.strip()
