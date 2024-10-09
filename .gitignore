@@ -2,3 +2,6 @@
 
 # Config
 config.json
+
+# Database
+*.db
