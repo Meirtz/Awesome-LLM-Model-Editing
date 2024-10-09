@@ -1,0 +1,17 @@
+{
+    "LLM-Paper-Daily": {
+        "url": "https://arxiv.org/list/cs.CL/new",
+        "path": "./LLM-Paper-Daily",
+        "topic": "LLM Research"
+    },
+    "Awesome-LLM-Jailbreak": {
+        "url": "https://arxiv.org/list/cs.CL/new",
+        "path": "./Awesome-LLM-Jailbreak",
+        "topic": "LLM Jailbreak"
+    },
+    "Awesome-LLM-Model-Editing": {
+        "url": "https://arxiv.org/list/cs.CL/new",
+        "path": "./Awesome-LLM-Model-Editing",
+        "topic": "LLM Model Editing"
+    }
+}

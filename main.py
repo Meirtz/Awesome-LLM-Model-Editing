@@ -114,6 +114,9 @@ class PageParser:
 
 class RepoManager:
     def __init__(self, config_path='config.json', prompt_path='prompts.json', template_path='readme_template.md'):
+        if not os.path.exists(config_path):
+            raise FileNotFoundError(f"Config file not found. Please copy config.example.json to {config_path} and modify it.")
+        
         with open(config_path, 'r', encoding='utf-8') as f:
             self.repos = json.load(f)
         with open(prompt_path, 'r', encoding='utf-8') as f:
@@ -124,18 +127,22 @@ class RepoManager:
     def ensure_repo_exists(self, repo_name):
         repo_path = self.repos[repo_name]['path']
         if not os.path.exists(repo_path):
-            print(f"Repository {repo_name} does not exist locally. Cloning...")
-            repo_url = self.repos[repo_name].get('git_url')
-            if repo_url:
-                try:
-                    subprocess.run(['git', 'clone', repo_url, repo_path], check=True)
-                    print(f"Successfully cloned {repo_name}")
-                except subprocess.CalledProcessError as e:
-                    print(f"Failed to clone repository: {e}")
-                    return False
-            else:
-                print(f"No git URL provided for {repo_name}. Creating directory.")
-                os.makedirs(repo_path)
+            print(f"Repository {repo_name} does not exist locally. Creating...")
+            os.makedirs(repo_path)
+            
+            # 创建 .gitignore 文件
+            gitignore_path = os.path.join(repo_path, '.gitignore')
+            with open(gitignore_path, 'w') as f:
+                f.write("# Python\n__pycache__/\n*.py[cod]\n\n# Environments\n.env\n.venv\nenv/\nvenv/\n\n# IDEs\n.vscode/\n.idea/\n")
+            
+            print(f"Created {repo_name} directory and added .gitignore")
+            
+            # 初始化 Git 仓库
+            try:
+                subprocess.run(['git', 'init'], cwd=repo_path, check=True)
+                print(f"Initialized Git repository for {repo_name}")
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to initialize Git repository: {e}")
         return True
 
     def update_readme(self, repo_name, content):
