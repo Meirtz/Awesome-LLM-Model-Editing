@@ -1,21 +1,30 @@
 import json
 import os
-import datetime
 import subprocess
 from typing import List, Dict, Any
 from paper_database import PaperDatabase
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 class RepoManager:
-    def __init__(self, config_path='config/config.json', prompt_path='config/prompts.json', template_path='templates/readme_template.md'):
-        if not os.path.exists(config_path):
-            raise FileNotFoundError(f"Config file not found. Please copy config.example.json to {config_path} and modify it.")
+    def __init__(self, config_path='config.json', prompt_path='prompts.json', template_path='readme_template.md'):
+        # 获取当前脚本的目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # 获取项目根目录（假设 src 目录在项目根目录下）
+        root_dir = os.path.dirname(current_dir)
         
-        with open(config_path, 'r', encoding='utf-8') as f:
+        # 构建完整的文件路径
+        self.config_path = os.path.join(root_dir, config_path)
+        self.prompt_path = os.path.join(root_dir, prompt_path)
+        self.template_path = os.path.join(root_dir, template_path)
+        
+        if not os.path.exists(self.config_path):
+            raise FileNotFoundError(f"Config file not found. Please copy config.example.json to {self.config_path} and modify it.")
+        
+        with open(self.config_path, 'r', encoding='utf-8') as f:
             self.repos = json.load(f)
-        with open(prompt_path, 'r', encoding='utf-8') as f:
+        with open(self.prompt_path, 'r', encoding='utf-8') as f:
             self.prompts = json.load(f)
-        with open(template_path, 'r', encoding='utf-8') as f:
+        with open(self.template_path, 'r', encoding='utf-8') as f:
             self.template = f.read()
         
         self.dbs = {}
@@ -47,27 +56,15 @@ class RepoManager:
                 print(f"Failed to initialize Git repository: {e}")
         return True
 
-    def update_readme(self, repo_name: str, new_papers: List[Dict[str, Any]]):
+    def update_readme(self, repo_name: str, recent_papers: List[Dict[str, Any]]):
         if not self.ensure_repo_exists(repo_name):
             print(f"Cannot update README for {repo_name}")
             return
 
         today = datetime.now().date()
-        
-        # 获取所有论文并按日期排序
-        all_papers = self.dbs[repo_name].get_papers()
-        all_papers.sort(key=lambda x: x['date_added'], reverse=True)
-        
-        # 选择最近一天的论文，如果不足100篇则包括更早的论文
-        selected_papers = []
-        current_date = today
-        while len(selected_papers) < 100 and current_date >= today - timedelta(days=30):  # 最多往前查找30天
-            daily_papers = [p for p in all_papers if p['date_added'] == current_date]
-            selected_papers.extend(daily_papers[:100 - len(selected_papers)])
-            current_date -= timedelta(days=1)
 
         content = ""
-        for i, paper in enumerate(selected_papers, 1):
+        for i, paper in enumerate(recent_papers, 1):
             content += f"### {i}. [{paper['title']}]({paper['link']})\n\n"
             content += f"**Summary**: {paper['summary']}\n\n"
 
@@ -80,13 +77,13 @@ class RepoManager:
         readme_path = os.path.join(self.repos_dir, repo_name, 'README.md')
         with open(readme_path, 'w', encoding='utf-8') as f:
             f.write(readme_content)
-        print(f"Updated README for {repo_name} with {len(selected_papers)} papers.")
+        print(f"Updated README for {repo_name} with {len(recent_papers)} papers.")
 
         self.commit_and_push(repo_name)
 
     def commit_and_push(self, repo_name):
         repo_path = self.repos[repo_name]['path']
-        today = datetime.date.today()
+        today = date.today()
         commit_message = f"Update README for {today}"
 
         try:
