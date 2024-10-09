@@ -1,19 +1,15 @@
-import argparse
-import os
 import sys
+import os
 
-# 添加项目根目录到 Python 路径
-project_root = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, project_root)
+# 将 src 目录添加到 Python 路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.main import main
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Update arXiv paper repositories")
-    parser.add_argument("--repos", nargs="+", default=["LLM-Paper-Daily"],
-                        help="List of repositories to update (default: LLM-Paper-Daily)")
-    return parser.parse_args()
-
 if __name__ == "__main__":
-    args = parse_args()
+    import argparse
+    parser = argparse.ArgumentParser(description="Run the paper processing pipeline.")
+    parser.add_argument('--repos', nargs='+', help='List of repositories to update', required=True)
+    args = parser.parse_args()
+    
     main(args.repos)
