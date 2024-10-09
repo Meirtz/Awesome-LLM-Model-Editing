@@ -79,4 +79,4 @@ class LLMClassifier:
             max_tokens=512,
             temperature=0.3
         )
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message.content.strip().replace("large language models (LLMs)", 'LLMs')
