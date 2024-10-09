@@ -1,8 +1,8 @@
 from llm_classifier import LLMClassifier
 from page_parser import PageParser
-from repo_manager import RepoManager
+from .repo_manager import RepoManager  # 修改这一行
 from utils import extract_arxiv_id
-from datetime import datetime
+from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 import os
@@ -88,12 +88,37 @@ def main(repos_to_update):
                     print(f"Exception details: {exc}")
                     print(f"Prompt template: {prompt_template}")
 
-        # 使用当前处理的论文更新README
-        repo_manager.update_readme(repo_name, relevant_papers)
+        # 从数据库获取所有论文
+        all_papers = repo_manager.dbs[repo_name].get_papers()
+        
+        # 筛选出相关的论文
+        relevant_papers = [p for p in all_papers if p.get('is_relevant', True)]
+        
+        # 按日期排序，最新的在前
+        relevant_papers.sort(key=lambda x: datetime.strptime(x['date_added'], '%Y-%m-%d').date(), reverse=True)
+        
+        # 选择最近30天内的论文，最多100篇
+        today = datetime.now().date()
+        recent_papers = [
+            p for p in relevant_papers 
+            if (today - datetime.strptime(p['date_added'], '%Y-%m-%d').date()).days <= 30
+        ][:100]
 
-        print(f"Updated README for {repo_name} with {len(relevant_papers)} papers.")
+        # 打印最近论文的摘要统计信息
+        print(f"Total relevant papers: {len(relevant_papers)}")
+        print(f"Recent papers (last 30 days, max 100): {len(recent_papers)}")
+        if recent_papers:
+            print(f"Date range of recent papers: from {recent_papers[-1]['date_added']} to {recent_papers[0]['date_added']}")
+        else:
+            print("No recent papers found.")
+
+        # 使用最近的论文更新README
+        repo_manager.update_readme(repo_name, recent_papers)
+
+        print(f"Updated README for {repo_name} with {len(recent_papers)} papers.")
+        print(f"Processed {len(relevant_papers)} new relevant papers.")
         print(f"Processed {len(irrelevant_papers)} irrelevant papers.")
         print(f"Skipped {skipped_papers} already processed papers.")
 
 if __name__ == "__main__":
-    main(["LLM-Paper-Daily"])
+    main(["LLM-Paper-Daily"]) # only for test
