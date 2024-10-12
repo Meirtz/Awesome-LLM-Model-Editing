@@ -6,7 +6,7 @@ Welcome to the **Awesome LLM Model Editing** repository! This project curates a 
 
 ## Daily Updates
 
-### 2024-10-11
+### 2024-10-12
 
 ### 1. [MKGL: Mastery of a Three-Word Language](https://arxiv.org/pdf/2410.07526)
 
@@ -296,4 +296,4 @@ Welcome to the **Awesome LLM Model Editing** repository! This project curates a 
 
 ---
 
-*Last updated on 2024-10-11*
+*Last updated on 2024-10-12*
